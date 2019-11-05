@@ -305,6 +305,15 @@ export default class PuzzleManager {
             constraints.push(new BarcodeConstraint());
         }
 
+        // AMW: management of a ground truth numbering system
+        if (json['master_numbering']) {
+            newpuz.masterNumbering = json['master_numbering'];
+        }
+
+        if (json['master_reference']) {
+            newpuz.masterReference = json['master_reference'];
+        }
+
         newpuz.constraints = constraints;
 
         if (!newpuz.canUseFolder(FolderManager.instance.getFolder(newpuz.folderName))) {
