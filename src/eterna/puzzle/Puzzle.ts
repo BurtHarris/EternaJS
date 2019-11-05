@@ -314,6 +314,22 @@ export default class Puzzle {
         this._boosterDefs = obj;
     }
 
+    public get masterNumbering(): string[] {
+        return this._masterNumbering;
+    }
+
+    public set masterNumbering(obj: string[]) {
+        this._masterNumbering = obj;
+    }
+
+    public get masterReference(): string {
+        return this._masterReference;
+    }
+
+    public set masterReference(obj: string) {
+        this._masterReference = obj;
+    }
+
     public get savedSequence(): number[] {
         return this._savedSequence;
     }
@@ -581,6 +597,8 @@ export default class Puzzle {
     private _hint: string = null;
     private _isSoftConstraint: boolean = false;
     private _boosterDefs: BoostersData = null;
+    private _masterNumbering: string[] = null;
+    private _masterReference: string = null;
 
     private static readonly T_APTAMER: string[] = ['aptamer', 'aptamer+oligo'];
     private static readonly T_OLIGO: string[] = ['oligo', 'aptamer+oligo'];
