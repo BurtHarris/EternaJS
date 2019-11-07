@@ -46,6 +46,7 @@ import URLButton from 'eterna/ui/URLButton';
 import FoldUtil from 'eterna/folding/FoldUtil';
 import ShapeConstraint, {AntiShapeConstraint} from 'eterna/constraints/constraints/ShapeConstraint';
 import {HighlightType} from 'eterna/pose2D/HighlightBox';
+import Utility from 'eterna/util/Utility';
 import {PuzzleEditPoseData} from '../PuzzleEdit/PuzzleEditMode';
 import CopyTextDialogMode from '../CopyTextDialogMode';
 import GameMode from '../GameMode';
@@ -297,8 +298,31 @@ export default class PoseEditMode extends GameMode {
     }
 
     private showCopySequenceDialog(): void {
-        let sequenceString = EPars.sequenceToString(this._poses[0].sequence);
-        this.modeStack.pushMode(new CopyTextDialogMode(sequenceString, 'Current Sequence'));
+        // AMW: okay, this is our major point of divergence.
+        // Rather than just copying the sequence string, if this._puzzle
+        // has master numbering, we have to do some computation!
+        // In particular: only copy sequence letters that aren't -s in the
+        // master numbering. Also, copy the master numbering along with.
+        if (!this._puzzle.masterNumbering || !this._puzzle.masterReference) {
+            let sequenceString = EPars.sequenceToString(this._poses[0].sequence);
+            this.modeStack.pushMode(new CopyTextDialogMode(sequenceString, 'Current Sequence'));
+        } else {
+            // Iterate over this._poses[0].sequence and this._puzzle.masterNumbering
+            // at the same time.
+            // AMW TODO: if there are multiple poses... are we in danger with multi state
+            // or multi molecule puzzles here?
+            // let that: PoseEditMode = this; // to avoid shadow
+            let culledSequence = this._poses[0].sequence.filter(
+                () => (item: number, index: number) => this._puzzle.masterNumbering[index] !== '-'
+            );
+            let culledNumbering = this._puzzle.masterNumbering.filter(
+                (item: string, index: number) => item !== '-'
+            );
+            let culledNumberingRepr = Utility.getStringRepr(culledNumbering.map(Number));
+
+            let sequenceString = EPars.sequenceToString(culledSequence);
+            this.modeStack.pushMode(new CopyTextDialogMode(`${sequenceString}|${culledNumberingRepr}|${this._puzzle.masterReference}`, 'Current Sequence'));
+        }
     }
 
     public setPuzzleState(newstate: PuzzleState): void {

@@ -189,4 +189,33 @@ export default class Utility {
         }
         return indices;
     }
+
+    /**
+     *
+     * Much like some Rosetta functionality, we need to turn 1,2,3,5,6
+     * into 1-3 5-6
+     *
+     * @param inds list of indices (assume sorted reasonably)
+     *
+     * @returns reduced string representation
+     */
+    public static getStringRepr(inds: number[]): string {
+        let tag = '';
+        let startRes = inds[0];
+        for (let i = 1; i < inds.length + 1; ++i) {
+            if (i === inds.length
+                || inds[i] !== inds[i - 1] + 1) {
+                // terminate
+                let stopRes = inds[i - 1];
+                tag += ' ';
+                if (stopRes > startRes) {
+                    tag += `${startRes}-${stopRes}`;
+                } else {
+                    tag += `${startRes}`;
+                }
+                if (i < inds.length) startRes = inds[i];
+            }
+        }
+        return tag;
+    }
 }
